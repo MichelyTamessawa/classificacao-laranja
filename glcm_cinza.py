@@ -3,81 +3,92 @@ import numpy as np
 from skimage import color, io
 from skimage.feature import greycomatrix
 
-def leituraImagens():
-    # listas contendo caminho + nome das imagens das laranjas para cada classe
-    laranjasBoas = []
-    laranjasCascaGrossa = []
-    laranjasPraga = []
-    laranjasPodre = []
-    laranjasVerde = []
 
-    pathBoa = "Fold 7\Boa"
-    pathCascaGrossa = "Fold 7\Ruin\Casca Grossa"
-    pathPraga = "Fold 7\Ruin\Dano Praga"
-    pathPodre = "Fold 7\Ruin\Podre"
-    pathVerde = "Fold 7\Ruin\Verde"
+def lista_nomes_imagens():
+    # listas contendo caminho + nome das imagens das laranjas para cada classe
+    laranjas_boas = []
+    laranjas_casca_grossa = []
+    laranjas_praga = []
+    laranjas_podre = []
+    laranjas_verde = []
+
+    # diretorio atual
+    cwd = os.getcwd()
+    
+    path_boa = cwd + "/" + "Fold 7/Boa"
+    path_casca_grossa =  cwd + "/" + "Fold 7/Ruin/Casca Grossa"
+    path_praga =  cwd + "/" + "Fold 7/Ruin/Dano Praga"
+    path_podre = cwd + "/" + "Fold 7/Ruin/Podre"
+    path_verde = cwd + "/" + "Fold 7/Ruin/Verde"
 
     # laranjas boas
     for i in range(1, 11):
-        path = pathBoa + "\Fold " + str(i) + "B"
-        nomeImagens = os.listdir(path)
-        laranjasBoas += list(map(lambda x: path + "\\" + x, nomeImagens))
+        path = path_boa + "/Fold " + str(i) + "B"
+        nome_imagens = os.listdir(path)
+        laranjas_boas += list(map(lambda x: path + "/" + x, nome_imagens))
+
+    print("{} laranjas boas".format(len(laranjas_boas)))
 
     # laranjas Ruins
-    ClassesRuins = {"C": pathCascaGrossa,
-                    "D": pathPraga,
-                    "P": pathPodre,
-                    "V": pathVerde}
+    classes_ruins = {"C": path_casca_grossa,
+                    "D": path_praga,
+                    "P": path_podre,
+                    "V": path_verde}
 
-    for key, value in ClassesRuins.items():
+    for key, value in classes_ruins.items():
         for i in range(1, 11):
-            path = value + "\Fold " + str(i) + str(key)
-            nomeImagens = os.listdir(path)
-
+            path = value + "/Fold " + str(i) + str(key)
+            nome_imagens = os.listdir(path)
             if key == "C": 
-                laranjasCascaGrossa += list(map(lambda x: path + "\\" + x, nomeImagens))
+                laranjas_casca_grossa += list(map(lambda x: path + "/" + x, nome_imagens))
             elif key == "D": 
-                laranjasPraga += list(map(lambda x: path + "\\" + x, nomeImagens))
+                laranjas_praga += list(map(lambda x: path + "/" + x, nome_imagens))
             elif key == "P": 
-                laranjasPodre += list(map(lambda x: path + "\\" + x, nomeImagens))
+                laranjas_podre += list(map(lambda x: path + "/" + x, nome_imagens))
             elif key == "V": 
-                laranjasVerde += list(map(lambda x: path + "\\" + x, nomeImagens))
+                laranjas_verde += list(map(lambda x: path + "/" + x, nome_imagens))
             else:
                 print("Erro na leitura do nome dos arquivos das laranjas ruins")
 
-    print("{} laranjas ruins".format(len(laranjasCascaGrossa)+len(laranjasVerde)+len(laranjasPodre)+len(laranjasPraga)))
+    print("{} laranjas ruins".format(len(laranjas_casca_grossa)+len(laranjas_verde)+len(laranjas_podre)+len(laranjas_praga)))
 
-    return laranjasBoas, laranjasCascaGrossa, laranjasPraga, laranjasPodre, laranjasVerde
+    return laranjas_boas, laranjas_casca_grossa, laranjas_praga, laranjas_podre, laranjas_verde
 
-def transformacaoTonsCinza(lista_nome_imagens):
+
+def calcula_glcm(lista_nome_imagens):
     lista_glcm = []
     
-
     for imagem in lista_nome_imagens:
         imagem_cinza = color.rgb2gray(io.imread(imagem))
+        print(imagem_cinza.dtype)
         imagem_cinza = np.uint(imagem_cinza * 255)
-        glcm = greycomatrix(imagem_cinza, distances=[1], angles=[
-                            0, np.pi/4, np.pi/2, 3*np.pi/4], levels=256, symmetric=True, normed=True)
+        glcm = greycomatrix(imagem_cinza, distances=[1], angles=[0, np.pi/4, np.pi/2, 3*np.pi/4], levels=256, symmetric=True, normed=True)
         lista_glcm.append(glcm)
+
+    print("{} glcms".format(len(lista_glcm)))
 
     return lista_glcm
 
+
+def grava_arquivo(nome_arquivo, lista):
+    arquivo = open(nome_arquivo,'w')
     
+    for elemento in lista:
+        arquivo.write("%s\n" % elemento)
+        
+    arquivo.close()
+
+
 def main():
-    laranjasBoas, laranjasCascaGrossa, laranjasPraga, laranjasPodre, laranjasVerde = leituraImagens()
-    glcm_boas = transformacaoTonsCinza(laranjasBoas)
-    glcm_casca_grossa = transformacaoTonsCinza(laranjasCascaGrossa)
-    glcm_praga = transformacaoTonsCinza(laranjasPraga)
-    glcm_podre = transformacaoTonsCinza(laranjasPodre)
-    glcm_verde = transformacaoTonsCinza(laranjasVerde)
+    laranjas_boas, laranjas_casca_grossa, laranjas_praga, laranjas_podre, laranjas_verde = lista_nomes_imagens()
+    glcm_boas = calcula_glcm(laranjas_boas)
+    #grava_arquivo("glcm_boas.txt", glcm_boas)
 
-if __== "__main__":
+    """ glcm_casca_grossa = calcula_glcm(laranjasCascaGrossa)
+    glcm_praga = calcula_glcm(laranjasPraga)
+    glcm_podre = calcula_glcm(laranjasPodre)
+    glcm_verde = calcula_glcm(laranjasVerde) """
+
+
+if __name__ == "__main__":
     main()
-    
-# to do
-# ler todas as imagens da base de dados
-
-# passar para tons de cinza
-# calcular 1 glcm para cada laranja
-
-# deixar a imagem colorida e calcular 3 glcm para cada laranja
