@@ -60,29 +60,18 @@ def calcula_glcm(lista_nome_imagens):
     
     for imagem in lista_nome_imagens:
         imagem_cinza = color.rgb2gray(io.imread(imagem))
-        print(imagem_cinza.dtype)
         imagem_cinza = np.uint(imagem_cinza * 255)
-        glcm = greycomatrix(imagem_cinza, distances=[1], angles=[0, np.pi/4, np.pi/2, 3*np.pi/4], levels=256, symmetric=True, normed=True)
+        
+        glcm = greycomatrix(imagem_cinza, distances=[1], angles=[0, np.pi/4, np.pi/2, 3*np.pi/4])
+        
         lista_glcm.append(glcm)
 
-    print("{} glcms".format(len(lista_glcm)))
-
     return lista_glcm
-
-
-def grava_arquivo(nome_arquivo, lista):
-    arquivo = open(nome_arquivo,'w')
-    
-    for elemento in lista:
-        arquivo.write("%s\n" % elemento)
-        
-    arquivo.close()
 
 
 def main():
     laranjas_boas, laranjas_casca_grossa, laranjas_praga, laranjas_podre, laranjas_verde = lista_nomes_imagens()
     glcm_boas = calcula_glcm(laranjas_boas)
-    #grava_arquivo("glcm_boas.txt", glcm_boas)
 
     """ glcm_casca_grossa = calcula_glcm(laranjasCascaGrossa)
     glcm_praga = calcula_glcm(laranjasPraga)

@@ -62,25 +62,26 @@ def calcula_glcm(lista_nome_imagens):
     lista_glcm = []
     
     for nome_imagem in lista_nome_imagens:
-        imagem_coloria = io.imread(nome_imagem)
+        imagem_colorida = io.imread(nome_imagem)
 
-        imagem_r = imagem_coloria[:,:,0]
-        imagem_g = imagem_coloria[:,:,1]
-        imagem_b = imagem_coloria[:,:,2]
+        imagem_r = imagem_colorida[:,:,0]
+        imagem_g = imagem_colorida[:,:,1]
+        imagem_b = imagem_colorida[:,:,2]
 
-        glcm_r = greycomatrix(imagem_r, distances=[1], angles=[0, np.pi/4, np.pi/2, 3*np.pi/4], levels=256, symmetric=True, normed=True)
-        glcm_g = greycomatrix(imagem_g, distances=[1], angles=[0, np.pi/4, np.pi/2, 3*np.pi/4], levels=256, symmetric=True, normed=True)
-        glcm_b = greycomatrix(imagem_b, distances=[1], angles=[0, np.pi/4, np.pi/2, 3*np.pi/4], levels=256, symmetric=True, normed=True)
-        lista_glcm.append([glcm_r, glcm_g, glcm_b])
+        glcm_r = greycomatrix(imagem_r, distances=[1], angles=[0, np.pi/4, np.pi/2, 3*np.pi/4])
+        glcm_g = greycomatrix(imagem_g, distances=[1], angles=[0, np.pi/4, np.pi/2, 3*np.pi/4])
+        glcm_b = greycomatrix(imagem_b, distances=[1], angles=[0, np.pi/4, np.pi/2, 3*np.pi/4])
+        
+        glcm = [glcm_r, glcm_g, glcm_b]
 
-    print("{} glcms".format(len(lista_glcm)))
+        lista_glcm.append(glcm)
 
     return lista_glcm
 
 
 def main():
     laranjas_boas, laranjas_casca_grossa, laranjas_praga, laranjas_podre, laranjas_verde = lista_nomes_imagens()
-    glcm_boas = calcula_glcm(laranjas_boas[0:6])
+    glcm_boas = calcula_glcm(laranjas_boas)
 
     """ glcm_casca_grossa = calcula_glcm(laranjasCascaGrossa)
     glcm_praga = calcula_glcm(laranjasPraga)
