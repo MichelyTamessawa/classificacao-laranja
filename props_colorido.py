@@ -4,8 +4,8 @@ from skimage import io
 from skimage.feature import greycomatrix , greycoprops
 
 
-def lista_nomes_imagens():
-    # listas contendo caminho + nome das imagens das laranjas para cada classe
+# retorna listas contendo caminho + nome das imagens das laranjas para cada classe
+def lista_nomes_imgs():
     laranjas_boas = []
     laranjas_casca_grossa = []
     laranjas_praga = []
@@ -15,62 +15,68 @@ def lista_nomes_imagens():
     # diretorio atual
     cwd = os.getcwd()
     
-    path_boa = cwd + "/" + "Fold 7/Boa"
-    path_casca_grossa =  cwd + "/" + "Fold 7/Ruin/Casca Grossa"
-    path_praga =  cwd + "/" + "Fold 7/Ruin/Dano Praga"
-    path_podre = cwd + "/" + "Fold 7/Ruin/Podre"
-    path_verde = cwd + "/" + "Fold 7/Ruin/Verde"
+    # diretório de cada classe
+    dir_boa = cwd + "/" + "Fold 7/Boa"
+    dir_casca_grossa =  cwd + "/" + "Fold 7/Ruin/Casca Grossa"
+    dir_praga =  cwd + "/" + "Fold 7/Ruin/Dano Praga"
+    dir_podre = cwd + "/" + "Fold 7/Ruin/Podre"
+    dir_verde = cwd + "/" + "Fold 7/Ruin/Verde"
 
-    # laranjas boas
+    # obter o caminho de arquivo das imagens de laranjas boas
     for i in range(1, 11):
-        path = path_boa + "/Fold " + str(i) + "B"
-        nome_imagens = os.listdir(path)
-        laranjas_boas += list(map(lambda x: path + "/" + x, nome_imagens))
+        dir = dir_boa + "/Fold " + str(i) + "B"
+        nome_imgs = os.listdir(dir)
+        laranjas_boas += list(map(lambda x: dir + "/" + x, nome_imgs))
 
     # laranjas Ruins
-    classes_ruins = {"C": path_casca_grossa,
-                    "D": path_praga,
-                    "P": path_podre,
-                    "V": path_verde}
+    classes_ruins = {"C": dir_casca_grossa,
+                    "D": dir_praga,
+                    "P": dir_podre,
+                    "V": dir_verde}
 
+    # obter o caminho de arquivo das imagens de laranjas ruins
     for key, value in classes_ruins.items():
         for i in range(1, 11):
-            path = value + "/Fold " + str(i) + str(key)
-            nome_imagens = os.listdir(path)
+            dir = value + "/Fold " + str(i) + str(key)
+            nome_imgs = os.listdir(dir)
 
             if key == "C": 
-                laranjas_casca_grossa += list(map(lambda x: path + "/" + x, nome_imagens))
+                laranjas_casca_grossa += list(map(lambda x: dir + "/" + x, nome_imgs))
             elif key == "D": 
-                laranjas_praga += list(map(lambda x: path + "/" + x, nome_imagens))
+                laranjas_praga += list(map(lambda x: dir + "/" + x, nome_imgs))
             elif key == "P": 
-                laranjas_podre += list(map(lambda x: path + "/" + x, nome_imagens))
+                laranjas_podre += list(map(lambda x: dir + "/" + x, nome_imgs))
             elif key == "V": 
-                laranjas_verde += list(map(lambda x: path + "/" + x, nome_imagens))
+                laranjas_verde += list(map(lambda x: dir + "/" + x, nome_imgs))
             else:
                 print("Erro na leitura do nome dos arquivos das laranjas ruins")
 
     return laranjas_boas, laranjas_casca_grossa, laranjas_praga, laranjas_podre, laranjas_verde
 
 
-def calcula_props(lista_nome_imagens, nome_arquivo):
-    # armazena as propriedades extraidas do glcm em um arquivo
+# armazena as propriedades extraidas do glcm em um arquivo
+def calcula_props(lista_nomes_imgs, nome_arquivo):
     file = open(nome_arquivo, "w")
     
-    for nome_imagem in lista_nome_imagens:
-        imagem_colorida = io.imread(nome_imagem)
+    for nome_img in lista_nomes_imgs:
+        img_colorida = io.imread(nome_img)
 
-        imagem_r = imagem_colorida[:,:,0]
-        imagem_g = imagem_colorida[:,:,1]
-        imagem_b = imagem_colorida[:,:,2]
+        # separação a img nas 3 bandas RGB
+        img_r = img_colorida[:,:,0]
+        img_g = img_colorida[:,:,1]
+        img_b = img_colorida[:,:,2]
 
-        glcm_r = greycomatrix(imagem_r, distances=[1], angles=[0, np.pi/4, np.pi/2, 3*np.pi/4])
-        glcm_g = greycomatrix(imagem_g, distances=[1], angles=[0, np.pi/4, np.pi/2, 3*np.pi/4])
-        glcm_b = greycomatrix(imagem_b, distances=[1], angles=[0, np.pi/4, np.pi/2, 3*np.pi/4])
+        # cálculo do glcm de cada banda
+        glcm_r = greycomatrix(img_r, distances=[1], angles=[0, np.pi/4, np.pi/2, 3*np.pi/4])
+        glcm_g = greycomatrix(img_g, distances=[1], angles=[0, np.pi/4, np.pi/2, 3*np.pi/4])
+        glcm_b = greycomatrix(img_b, distances=[1], angles=[0, np.pi/4, np.pi/2, 3*np.pi/4])
         
+        # cálculo das propriedades para cada glcm
         x_r = calcula_props_RGB(glcm_r)
         x_g = calcula_props_RGB(glcm_g)
         x_b = calcula_props_RGB(glcm_b)
 
+        # resultado das propriedades de textura nas 3 bandas
         x = [x_r, x_g, x_b]
 
         file.write(str(x) + '\n')
@@ -78,32 +84,28 @@ def calcula_props(lista_nome_imagens, nome_arquivo):
     file.close
 
 
+# cálculo as propriedades de textura pelo glcm em cada banda do RGB
 def calcula_props_RGB(glcm):
-    # calcula as seis propriedades pelo glcm
-    contrast = greycoprops(glcm, 'contrast')[0,0]
-    dissimilarity = greycoprops(glcm, 'dissimilarity')[0,0]
-    homogeneity = greycoprops(glcm, 'homogeneity')[0,0]
-    ASM = greycoprops(glcm, 'ASM')[0,0]
-    energy = greycoprops(glcm, 'energy')[0,0]
-    correlation = greycoprops(glcm, 'correlation')[0,0]
+    # lista de propriedades da textura interessantes
+    lista_props = ['contrast', 'dissimilarity', 'homogeneity', 'ASM', 'energy', 'correlation']
+    
+    resultados = []
 
-    return [contrast, dissimilarity, homogeneity, ASM, energy, correlation]
+    # cálculo de cada propriedade
+    for prop in lista_props:
+        resultados.append(greycoprops(glcm, prop)[0,0])
 
-
-def armazena_props():
-    laranjas_boas, laranjas_casca_grossa, laranjas_praga, laranjas_podre, laranjas_verde = lista_nomes_imagens()
-
-    # calcula as propriedades de textura a partir do glcm das 3 bandas rgb
-    calcula_props(laranjas_boas, "greycoprops_colorido/" + "boas.txt")
-    calcula_props(laranjas_casca_grossa, "greycoprops_colorido/" + "casca_grossa.txt")
-    calcula_props(laranjas_praga, "greycoprops_colorido/" + "praga.txt")
-    calcula_props(laranjas_podre, "greycoprops_colorido/" + "podre.txt")
-    calcula_props(laranjas_verde, "greycoprops_colorido/" + "verde.txt")
-
+    return resultados
 
 def main():
-    armazena_props()
+    imgs_entrada = lista_nomes_imgs()
 
+    # diretório para armazenar os resultados
+    dir_resultados = ["greycoprops_colorido/boas.txt","greycoprops_colorido/casca_grossa.txt","greycoprops_colorido/praga.txt","greycoprops_colorido/podre.txt","greycoprops_colorido/verde.txt"]
+
+    # cálculo das propriedades de textura a partir do glcm
+    for i in range(0, 5):
+        calcula_props(imgs_entrada[i], dir_resultados[i])
 
 if __name__ == "__main__":
     main()
