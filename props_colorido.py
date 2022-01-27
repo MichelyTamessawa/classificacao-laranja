@@ -3,7 +3,7 @@ import numpy as np
 from skimage import io
 from skimage.feature import greycomatrix , greycoprops
 
-lista_props = ['contrast', 'homogeneity', 'energy']
+lista_props = ['contrast', 'dissimilarity', 'homogeneity', 'ASM', 'energy', 'correlation']
 
 # cálculo as propriedades de textura pelo glcm em cada banda do RGB
 def calcula_props_RGB(glcm):
@@ -29,7 +29,7 @@ def calcula_greycoprops(tipo_laranja, sigla_tipo, dir_tipo):
         os.mkdir(dir_resultado)
         print("O diretório {} foi criado".format(dir_resultado))
     except FileExistsError:
-        print("O diretório {} já existe".format(dir_resultado))
+        print("O diretório {} já existe, então ele será reescrito".format(dir_resultado))
 
     for i in range(1, 11):
         path_imagens = []

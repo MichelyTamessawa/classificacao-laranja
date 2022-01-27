@@ -1,12 +1,14 @@
 import sys
-from os import path
 import numpy as np
+from os import path
+from sklearn import svm
 from skimage import color, io
 from skimage.color.colorconv import rgb2hsv
 from skimage.feature import greycomatrix, greycoprops
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.model_selection import cross_val_score
-from sklearn import svm
+from sklearn.model_selection import cross_val_score, GridSearchCV, train_test_split
+from sklearn.metrics import accuracy_score
+
 
 # boa 0
 # casca grossa 1
@@ -39,7 +41,9 @@ def leitura_cinza():
 
     Y = [0]*2270 + [1]*2270 + [2]*2220 + [3]*2270 + [4]*2270
 
-    return X, Y
+    x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size=0.3,random_state=100)
+
+    return x_train, x_test, y_train, y_test
 
 
 def leitura_colorida():
@@ -64,38 +68,77 @@ def leitura_colorida():
 
     Y = [0]*2270 + [1]*2270 + [2]*2220 + [3]*2270 + [4]*2270
 
-    return X, Y
+    x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size=0.3,random_state=100)
+
+    return x_train, x_test, y_train, y_test
 
 
 def validacao_cruzada_knn(X, Y, k):
 
-    clf = KNeighborsClassifier(n_neighbors=k)
+    knn = KNeighborsClassifier(n_neighbors=k)
 
-    scores = cross_val_score(clf, X, Y, cv=10, scoring='accuracy')
+    scores = cross_val_score(knn, X, Y, cv=10, scoring='accuracy')
 
     print("Média dos resultados com knn k = {}: {}".format(k, scores.mean()))
     
 
 def validacao_cruzada_svm(X, Y):
     
-    clf = svm.SVC(gamma='auto')
+    knn = svm.SVC(gamma='auto')
 
-    scores = cross_val_score(clf, X, Y, cv=10, scoring='accuracy')
+    scores = cross_val_score(knn, X, Y, cv=10, scoring='accuracy')
 
     print("Média dos resultados com SVM: {}".format(scores.mean()))
 
 
+def validacao_gridsearchcv(X, Y):
+    knn = KNeighborsClassifier()
+
+    k_range = list(range(1, 31))
+    
+    param_grid = dict(n_neighbors=k_range)
+
+    grid = GridSearchCV(knn, param_grid, cv=10, scoring='accuracy', return_train_score=False,verbose=1)
+
+    grid_search=grid.fit(X, Y)
+
+    k_result = grid_search.best_params_['n_neighbors'] 
+    
+    print(grid_search.best_params_)
+
+    accuracy = grid_search.best_score_ *100
+    
+    print("Accuracy for our training dataset with tuning is : {:.2f}%".format(accuracy) )
+
+    return k_result
+
+
+def verificacao_acuracia(x_train, x_test, y_train, y_test, k):
+    knn = KNeighborsClassifier(n_neighbors=k)
+
+    knn.fit(x_train, y_train)
+
+    y_test_result = knn.predict(x_test) 
+
+    test_accuracy = accuracy_score(y_test, y_test_result)*100
+
+    print("Accuracy for our testing dataset with tuning is : {:.2f}%".format(test_accuracy) )
+
+
 def main(tipo_leitura):
     if tipo_leitura == "rgb":
-        X, Y = leitura_colorida()
+        x_train, x_test, y_train, y_test = leitura_colorida()
     else:
-        X, Y = leitura_cinza()
+        x_train, x_test, y_train, y_test = leitura_cinza()
 
-    validacao_cruzada_knn(X, Y, 3)
-    validacao_cruzada_knn(X, Y, 5)
-    validacao_cruzada_knn(X, Y, 7)
+    # validacao_cruzada_knn(X, Y, 3)
+    # validacao_cruzada_knn(X, Y, 5)
+    # validacao_cruzada_knn(X, Y, 7)
+    # validacao_cruzada_svm(X, Y)
 
-    validacao_cruzada_svm(X, Y)
+    # testando varios parametros de k com gridsearch
+    k = validacao_gridsearchcv(x_train, y_train)
+    verificacao_acuracia(x_train, x_test, y_train, y_test, k)
 
 if __name__ == "__main__":
     main(sys.argv[1])
