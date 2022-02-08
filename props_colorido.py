@@ -1,9 +1,16 @@
 import os
+import csv
 import numpy as np
 from skimage import io
 from skimage.feature import greycomatrix , greycoprops
 
 lista_props = ['contrast', 'dissimilarity', 'homogeneity', 'ASM', 'energy', 'correlation']
+header = ['contrast_r','contrast_g','contrast_b', 
+        'dissimilarity_r', 'dissimilarity_g', 'dissimilarity_b', 
+        'homogeneity_r', 'homogeneity_g', 'homogeneity_b',
+        'ASM_r','ASM_g','ASM_b', 
+        'energy_r', 'energy_g', 'energy_b', 
+        'correlation_r', 'correlation_g', 'correlation_b']
 
 # cálculo as propriedades de textura pelo glcm em cada banda do RGB
 def calcula_props_RGB(glcm):
@@ -41,8 +48,10 @@ def calcula_greycoprops(tipo_laranja, sigla_tipo, dir_tipo):
         path_imagens += list(map(lambda x: path + "/" + x, nome_imgs))
         
         # abre o arquivo para gravação dos resultados
-        dir_resultado_pasta = dir_resultado + pasta + ".txt"
-        file = open(dir_resultado_pasta, "w")
+        dir_resultado_pasta = dir_resultado + pasta + ".csv"
+        file = open(dir_resultado_pasta, "w", newline='')
+        writer = csv.writer(file)
+        writer.writerow(header)
 
         # calculo do graycoprops de cada imagem
         for img in path_imagens:
@@ -64,12 +73,10 @@ def calcula_greycoprops(tipo_laranja, sigla_tipo, dir_tipo):
             x_b = calcula_props_RGB(glcm_b)
 
             # resultado das propriedades de textura nas 3 bandas
-            x = [x_r, x_g, x_b]
+            x = x_r + x_g + x_b
 
             # escreve no arquivo os resultados da img
-            for resultados in x:
-                [file.write(str(p) + " ") for p in resultados]
-            file.write('\n')
+            writer.writerow(x)
 
         file.close
     

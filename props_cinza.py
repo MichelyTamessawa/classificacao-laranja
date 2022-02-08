@@ -1,4 +1,5 @@
 import os
+import csv
 import numpy as np
 from skimage import color, io
 from skimage.feature import greycomatrix, greycoprops
@@ -31,9 +32,11 @@ def calcula_greycoprops(tipo_laranja, sigla_tipo, dir_tipo):
         path_imagens += list(map(lambda x: path + "/" + x, nome_imgs))
         
         # abre o arquivo para gravação dos resultados
-        dir_resultado_pasta = dir_resultado + pasta + ".txt"
-        file = open(dir_resultado_pasta, "w")
-
+        dir_resultado_pasta = dir_resultado + pasta + ".csv"
+        file = open(dir_resultado_pasta, "w", newline='')
+        writer = csv.writer(file)
+        writer.writerow(lista_props)
+        
         # calculo do graycoprops de cada imagem
         for img in path_imagens:
             resultados = []
@@ -46,9 +49,7 @@ def calcula_greycoprops(tipo_laranja, sigla_tipo, dir_tipo):
                 resultados.append(greycoprops(glcm, prop)[0,0])
 
             # escreve os resultados no arquivo
-            for x in resultados:
-                file.write(str(x) + " ")
-            file.write('\n')
+            writer.writerow(resultados)
 
         file.close
     
