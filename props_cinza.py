@@ -1,13 +1,35 @@
 import os
 import csv
+import sys
 import numpy as np
 from skimage import color, io
 from skimage.feature import greycomatrix, greycoprops
 
-lista_props = ['contrast', 'dissimilarity', 'homogeneity', 'ASM', 'energy', 'correlation']
+# classes das laranjas
+# boa 0
+# casca grossa 1
+# podre 2
+# dano praga 3
+# verde 4
 
 def calcula_greycoprops(tipo_laranja, sigla_tipo, dir_tipo):
     dir_resultado = "greycoprops_cinza/" + tipo_laranja
+
+    lista_props = ['contrast', 'dissimilarity', 'homogeneity', 'ASM', 'energy', 'correlation']
+
+    if tipo_laranja == 'Boa':
+        classe_laranja = 0
+    elif tipo_laranja == 'Casca Grossa':
+        classe_laranja = 1
+    elif tipo_laranja == 'Dano Praga':
+        classe_laranja = 2
+    elif tipo_laranja == 'Podre':
+        classe_laranja = 3
+    elif tipo_laranja == 'Verde':
+        classe_laranja = 4
+    else:
+        print("Erro: não existe esta classe de laranja")
+        sys.exit()
     
     # cria os diretorios dos resultados
     try:
@@ -34,8 +56,10 @@ def calcula_greycoprops(tipo_laranja, sigla_tipo, dir_tipo):
         # abre o arquivo para gravação dos resultados
         dir_resultado_pasta = dir_resultado + pasta + ".csv"
         file = open(dir_resultado_pasta, "w", newline='')
+        header = ['class'] + lista_props
+
         writer = csv.writer(file)
-        writer.writerow(lista_props)
+        writer.writerow(header)
         
         # calculo do graycoprops de cada imagem
         for img in path_imagens:
@@ -49,7 +73,7 @@ def calcula_greycoprops(tipo_laranja, sigla_tipo, dir_tipo):
                 resultados.append(greycoprops(glcm, prop)[0,0])
 
             # escreve os resultados no arquivo
-            writer.writerow(resultados)
+            writer.writerow([classe_laranja] + resultados)
 
         file.close
     

@@ -1,20 +1,21 @@
 import os
 import csv
+import sys
 import numpy as np
 from skimage import io
 from skimage.feature import greycomatrix , greycoprops
 
-lista_props = ['contrast', 'dissimilarity', 'homogeneity', 'ASM', 'energy', 'correlation']
-header = ['contrast_r','contrast_g','contrast_b', 
-        'dissimilarity_r', 'dissimilarity_g', 'dissimilarity_b', 
-        'homogeneity_r', 'homogeneity_g', 'homogeneity_b',
-        'ASM_r','ASM_g','ASM_b', 
-        'energy_r', 'energy_g', 'energy_b', 
-        'correlation_r', 'correlation_g', 'correlation_b']
+# classes das laranjas
+# boa 0
+# casca grossa 1
+# podre 2
+# dano praga 3
+# verde 4
 
 # cálculo as propriedades de textura pelo glcm em cada banda do RGB
 def calcula_props_RGB(glcm):
     resultados = []
+    lista_props = ['contrast', 'dissimilarity', 'homogeneity', 'ASM', 'energy', 'correlation']
 
     # cálculo de cada propriedade
     for prop in lista_props:
@@ -24,6 +25,27 @@ def calcula_props_RGB(glcm):
 
 def calcula_greycoprops(tipo_laranja, sigla_tipo, dir_tipo):
     dir_resultado = "greycoprops_colorida/" + tipo_laranja
+    header = [ 'class',
+    'contrast_r','contrast_g','contrast_b', 
+    'dissimilarity_r', 'dissimilarity_g', 'dissimilarity_b', 
+    'homogeneity_r', 'homogeneity_g', 'homogeneity_b',
+    'ASM_r','ASM_g','ASM_b', 
+    'energy_r', 'energy_g', 'energy_b', 
+    'correlation_r', 'correlation_g', 'correlation_b']
+
+    if tipo_laranja == 'Boa':
+        classe_laranja = 0
+    elif tipo_laranja == 'Casca Grossa':
+        classe_laranja = 1
+    elif tipo_laranja == 'Dano Praga':
+        classe_laranja = 2
+    elif tipo_laranja == 'Podre':
+        classe_laranja = 3
+    elif tipo_laranja == 'Verde':
+        classe_laranja = 4
+    else:
+        print("Erro: não existe esta classe de laranja")
+        sys.exit()
     
     # cria os diretorios dos resultados
     try:
@@ -76,7 +98,7 @@ def calcula_greycoprops(tipo_laranja, sigla_tipo, dir_tipo):
             x = x_r + x_g + x_b
 
             # escreve no arquivo os resultados da img
-            writer.writerow(x)
+            writer.writerow([classe_laranja] + x)
 
         file.close
     
