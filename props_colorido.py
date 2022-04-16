@@ -20,18 +20,33 @@ def calcula_props_RGB(glcm):
     # cálculo de cada propriedade
     for prop in lista_props:
         resultados.append(greycoprops(glcm, prop)[0,0])
+        resultados.append(greycoprops(glcm, prop)[0,1])
+        resultados.append(greycoprops(glcm, prop)[0,2])
+        resultados.append(greycoprops(glcm, prop)[0,3])
 
     return resultados
 
 def calcula_greycoprops(tipo_laranja, sigla_tipo, dir_tipo):
     dir_resultado = "greycoprops_colorida/" + tipo_laranja
-    header = [ 'class',
-    'contrast_r','contrast_g','contrast_b', 
-    'dissimilarity_r', 'dissimilarity_g', 'dissimilarity_b', 
-    'homogeneity_r', 'homogeneity_g', 'homogeneity_b',
-    'ASM_r','ASM_g','ASM_b', 
-    'energy_r', 'energy_g', 'energy_b', 
-    'correlation_r', 'correlation_g', 'correlation_b']
+    header = ['class',
+        'contrast_r_0', 'contrast_r_45', 'contrast_r_90', 'contrast_r_135',
+        'contrast_g_0', 'contrast_g_45', 'contrast_g_90', 'contrast_g_135',
+        'contrast_b_0', 'contrast_b_45', 'contrast_b_90', 'contrast_b_135',
+        'dissimilarity_r_0', 'dissimilarity_r_45', 'dissimilarity_r_90', 'dissimilarity_r_135',
+        'dissimilarity_g_0', 'dissimilarity_g_45', 'dissimilarity_g_90', 'dissimilarity_g_135',
+        'dissimilarity_b_0', 'dissimilarity_b_45', 'dissimilarity_b_90', 'dissimilarity_b_135',
+        'homogeneity_r_0', 'homogeneity_r_45', 'homogeneity_r_90', 'homogeneity_r_135',
+        'homogeneity_g_0', 'homogeneity_g_45', 'homogeneity_g_90', 'homogeneity_g_135',
+        'homogeneity_b_0', 'homogeneity_b_45', 'homogeneity_b_90', 'homogeneity_b_135',
+        'ASM_r_0', 'ASM_r_45', 'ASM_r_90', 'ASM_r_135',
+        'ASM_g_0', 'ASM_g_45', 'ASM_g_90', 'ASM_g_135',
+        'ASM_b_0', 'ASM_b_45', 'ASM_b_90', 'ASM_b_135',
+        'energy_r_0', 'energy_r_45', 'energy_r_90', 'energy_r_135',
+        'energy_g_0', 'energy_g_45', 'energy_g_90', 'energy_g_135',
+        'energy_b_0', 'energy_b_45', 'energy_b_90', 'energy_b_135',
+        'correlation_r_0', 'correlation_r_45', 'correlation_r_90', 'correlation_r_135',
+        'correlation_g_0', 'correlation_g_45', 'correlation_g_90', 'correlation_g_135',
+        'correlation_b_0', 'correlation_b_45', 'correlation_b_90', 'correlation_b_135']
 
     if tipo_laranja == 'Boa':
         classe_laranja = 0

@@ -56,7 +56,13 @@ def calcula_greycoprops(tipo_laranja, sigla_tipo, dir_tipo):
         # abre o arquivo para gravação dos resultados
         dir_resultado_pasta = dir_resultado + pasta + ".csv"
         file = open(dir_resultado_pasta, "w", newline='')
-        header = ['class'] + lista_props
+        header = ['class', 
+            'contrast_0', 'contrast_45', 'contrast_90', 'contrast_135',
+            'dissimilarity_0', 'dissimilarity_45', 'dissimilarity_90', 'dissimilarity_135',
+            'homogeneity_0', 'homogeneity_45', 'homogeneity_90', 'homogeneity_135',
+            'ASM_0', 'ASM_45', 'ASM_90', 'ASM_135',
+            'energy_0', 'energy_45', 'energy_90', 'energy_135',
+            'correlation_0', 'correlation_45', 'correlation_90', 'correlation_135']
 
         writer = csv.writer(file)
         writer.writerow(header)
@@ -71,6 +77,9 @@ def calcula_greycoprops(tipo_laranja, sigla_tipo, dir_tipo):
             # cálculo de cada propriedade
             for prop in lista_props:
                 resultados.append(greycoprops(glcm, prop)[0,0])
+                resultados.append(greycoprops(glcm, prop)[0,1])
+                resultados.append(greycoprops(glcm, prop)[0,2])
+                resultados.append(greycoprops(glcm, prop)[0,3])
 
             # escreve os resultados no arquivo
             writer.writerow([classe_laranja] + resultados)
