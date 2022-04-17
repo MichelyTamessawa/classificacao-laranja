@@ -1,6 +1,6 @@
 # Classificação de Imagens de Laranjas por Técnicas de Processamento Digital de Imagens e Reconhecimento de Padrões
 
-Código-fonte do Trabalho de Conclusão de Curso apresentado ao Departamento de Informática do curso Ciência da Computação. Este trabalho utiliza técnicas de PDI para extração de características das imagens de laranjas pela matriz GLCM, que são as entradas de dados para os classificadores K-NN, RandomFlorest e SVM.
+Código-fonte do Trabalho de Conclusão de Curso apresentado ao Departamento de Informática do curso Ciência da Computação. Este trabalho utiliza técnicas de PDI para extração de características das imagens de laranjas pela matriz GLCM, que são as entradas de dados para os classificadores K-NN, RF e SVM.
 Bibliotecas instaladas e utilizadas neste trabalho:
 - NumPy
 - Pandas
