@@ -7,7 +7,7 @@ Bibliotecas instaladas e utilizadas neste trabalho:
 - Scikit-image
 - Scikit-learn
 
-# Como executar:
+## Como executar:
 
 ### Clone este repositório
 $ git clone <https://github.com/MichelyTamessawa/classificacao-laranja.git>
@@ -20,4 +20,5 @@ $ python3 props_cinza.py
 
 $ python3 props_colorido.py
 
-### Execute o código da classificação no colab (atente ao caminho dos diretórios que armazem os dados das propriedades do GLCM)
+### Execute o código da classificação no colab 
+Alterar o caminho dos diretórios que armazem os dados das propriedades do GLCM
